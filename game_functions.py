@@ -1,6 +1,35 @@
 import sys
 import pygame
 from bullet import Bullet
+from alien import Alien
+
+
+def get_number_aliens_x(ai_settings,alien_width):
+    available_space_x = ai_settings.screen_width - alien_width
+    number_alien_x = int(available_space_x / (2 * alien_width))
+    return number_alien_x
+
+def creat_alien(ai_settings,screen,aliens,alien_number,row_number):
+    """创建一个外星人并将其放在当前行"""
+    alien = Alien(ai_settings, screen)
+    alien_width = alien.rect.width
+    alien.x = alien_width + 2 * alien_width * alien_number
+    alien.rect.x = alien.x
+    alien.rect.y = alien.rect.height+2*alien.rect.height*row_number
+    aliens.add(alien)
+
+def get_number_rows(ai_settings,ship_height,alien_height):
+    available_space_y = (ai_settings.screen_height-(2*alien_height)-ship_height)
+    number_rows=int(available_space_y/(2*alien_height))
+    return number_rows
+
+def creat_fleet(ai_settings,screen,ship,aliens):
+    alien = Alien(ai_settings,screen)
+    number_aliens_x=get_number_aliens_x(ai_settings,alien.rect.width)
+    number_rows=get_number_rows(ai_settings,ship.rect.height,alien.rect.height)
+    for row_number in range(number_rows):
+        for alien_number in range(number_aliens_x):
+            creat_alien(ai_settings,screen,aliens,alien_number,row_number)
 
 
 def check_keydown_events(event,ai_settings,screen,ship,bullets):
@@ -41,7 +70,7 @@ def check_events(ai_settings,screen,ship,bullets):
 
 
 
-def update_screen(ai_settings,screen,ship,alien,bullets):
+def update_screen(ai_settings,screen,ship,aliens,bullets):
     """更新屏幕上的图像，并切换到新屏幕"""
     # 每次循环时重绘屏幕
     screen.fill(ai_settings.bg_color)
@@ -49,7 +78,8 @@ def update_screen(ai_settings,screen,ship,alien,bullets):
     for bullet in bullets.sprites():
         bullet.draw_bullet()
     ship.blitme()
-    alien.blitme()
+    aliens.draw(screen)
+
     # 让最近绘制的屏幕可见
     pygame.display.flip()
 
@@ -60,3 +90,24 @@ def update_bullets(bullets):
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
 
+def check_fleet_edges(ai_settings,aliens):
+    for alien in aliens.sprites():
+        if alien.check_edges():
+            change_fleet_direction(ai_settings,aliens)
+            break
+
+def change_fleet_direction(ai_settings,aliens):
+    for alien in aliens.sprites():
+        alien.rect.y+=ai_settings.fleet_drop_speed
+
+    ai_settings.fleet_direction *=-1
+
+def update_aliens(ai_settings,aliens):
+    """
+    检查是否有外星人位于屏幕边缘，并更新整群外星人的位置
+    :param ai_settings:
+    :param aliens:
+    :return:
+    """
+    check_fleet_edges(ai_settings,aliens)
+    aliens.update()

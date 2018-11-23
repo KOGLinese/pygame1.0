@@ -7,6 +7,10 @@ class Settings():
         self.bg_color = (253,253,254)
 
         self.ship_speed_factor = 2
+        self.alien_speed_factor = 1
+        self.fleet_drop_speed = 10
+        # fleet_direction 1右移 -1 左移
+        self.fleet_direction = 1
         #子弹设置
         self.bullet_speed_factor = 1
         self.bullet_width = 3
