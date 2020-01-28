@@ -83,12 +83,18 @@ def update_screen(ai_settings,screen,ship,aliens,bullets):
     # 让最近绘制的屏幕可见
     pygame.display.flip()
 
-def update_bullets(bullets):
+def update_bullets(aliens,bullets):
+    """更新子弹的位置，并删除已消失的子弹"""
+    # 更新子弹位置
     bullets.update()
+
     # 删除消失的子弹
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
+    # 检查是否有子弹击中了外星人
+    # 如果是这样，就删除相应的子弹和外星人
+    collisions = pygame.sprite.groupcollide(bullets,aliens,True,True)
 
 def check_fleet_edges(ai_settings,aliens):
     for alien in aliens.sprites():
