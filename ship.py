@@ -17,7 +17,7 @@ class Ship():
         self.rect.centerx = self.screen_rect.centerx
         self.rect.bottom = self.screen_rect.bottom
 
-        self.center = floatt(self.rect.cenerx)
+        self.center = float(self.rect.centerx)
         # 移动标志
         self.moving_right = False
         self.moving_left = False

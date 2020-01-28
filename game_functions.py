@@ -8,6 +8,7 @@ def get_number_aliens_x(ai_settings,alien_width):
     available_space_x = ai_settings.screen_width - alien_width
     number_alien_x = int(available_space_x / (2 * alien_width))
     return number_alien_x
+
 # 放置外星人添加到群组中
 def creat_alien(ai_settings,screen,aliens,alien_number,row_number):
     """创建一个外星人并将其放在当前行"""
@@ -96,7 +97,7 @@ def update_screen(ai_settings,screen,ship,aliens,bullets):
     # 让最近绘制的屏幕可见
     pygame.display.flip()
 
-def update_bullets(aliens,bullets):
+def update_bullets(ai_settings,screen,ship, aliens,bullets):
     """更新子弹的位置，并删除已消失的子弹"""
     # 更新子弹位置
     bullets.update()
@@ -108,6 +109,11 @@ def update_bullets(aliens,bullets):
     # 检查是否有子弹击中了外星人
     # 如果是这样，就删除相应的子弹和外星人
     collisions = pygame.sprite.groupcollide(bullets,aliens,True,True)
+
+    if len(aliens) == 0:
+        # 删除现有子弹并更新一群外星人
+        bullets.empty()
+        creat_fleet(ai_settings,screen,ship,aliens)
 
 # 边界检测
 def check_fleet_edges(ai_settings,aliens):
