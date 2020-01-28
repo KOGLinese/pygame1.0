@@ -3,12 +3,12 @@ import pygame
 from bullet import Bullet
 from alien import Alien
 
-
+# 返回一行屏幕可以放多少个外星人
 def get_number_aliens_x(ai_settings,alien_width):
     available_space_x = ai_settings.screen_width - alien_width
     number_alien_x = int(available_space_x / (2 * alien_width))
     return number_alien_x
-
+# 放置外星人添加到群组中
 def creat_alien(ai_settings,screen,aliens,alien_number,row_number):
     """创建一个外星人并将其放在当前行"""
     alien = Alien(ai_settings, screen)
@@ -18,11 +18,13 @@ def creat_alien(ai_settings,screen,aliens,alien_number,row_number):
     alien.rect.y = alien.rect.height+2*alien.rect.height*row_number
     aliens.add(alien)
 
+# 计算得到外星人出现的适合行数
 def get_number_rows(ai_settings,ship_height,alien_height):
     available_space_y = (ai_settings.screen_height-(2*alien_height)-ship_height)
     number_rows=int(available_space_y/(2*alien_height))
     return number_rows
 
+# 循环创建外星人
 def creat_fleet(ai_settings,screen,ship,aliens):
     alien = Alien(ai_settings,screen)
     number_aliens_x=get_number_aliens_x(ai_settings,alien.rect.width)
@@ -31,16 +33,20 @@ def creat_fleet(ai_settings,screen,ship,aliens):
         for alien_number in range(number_aliens_x):
             creat_alien(ai_settings,screen,aliens,alien_number,row_number)
 
-
+# 键盘监听事件 键盘按下
 def check_keydown_events(event,ai_settings,screen,ship,bullets):
+    # 键盘 q 退出系统
     if event.key == pygame.K_q:
         sys.exit()
+    # 键盘 右
     if event.key == pygame.K_RIGHT:
         # 向右移动
         ship.moving_right = True
+
     if event.key == pygame.K_LEFT:
         # 向左移动
         ship.moving_left = True
+    # 空格发射子弹
     elif event.key == pygame.K_SPACE :
         fire_bullet(ai_settings,screen,ship,bullets)
 
@@ -50,13 +56,16 @@ def fire_bullet(ai_settings,screen,ship,bullets):
         new_bullet = Bullet(ai_settings, screen, ship)
         bullets.add(new_bullet)
 
+# 键盘松开
 def check_keyup_events(event,ship):
+    # 松开 右
     if event.key == pygame.K_RIGHT:
         ship.moving_right = False
+    # 松开左
     if event.key == pygame.K_LEFT:
         ship.moving_left = False
 
-
+# 监听事件
 def check_events(ai_settings,screen,ship,bullets):
     """响应按键和鼠标事件"""
     # 监视键盘和鼠标事件
@@ -73,11 +82,15 @@ def check_events(ai_settings,screen,ship,bullets):
 def update_screen(ai_settings,screen,ship,aliens,bullets):
     """更新屏幕上的图像，并切换到新屏幕"""
     # 每次循环时重绘屏幕
+    # 填充背景色
     screen.fill(ai_settings.bg_color)
 
     for bullet in bullets.sprites():
         bullet.draw_bullet()
+    # 描绘飞船
     ship.blitme()
+
+    # 将外星人群组放入屏幕
     aliens.draw(screen)
 
     # 让最近绘制的屏幕可见
@@ -96,13 +109,15 @@ def update_bullets(aliens,bullets):
     # 如果是这样，就删除相应的子弹和外星人
     collisions = pygame.sprite.groupcollide(bullets,aliens,True,True)
 
+# 边界检测
 def check_fleet_edges(ai_settings,aliens):
     for alien in aliens.sprites():
         if alien.check_edges():
             change_fleet_direction(ai_settings,aliens)
             break
-
+# 改变舰队方向
 def change_fleet_direction(ai_settings,aliens):
+    # 所有外星人向下移动
     for alien in aliens.sprites():
         alien.rect.y+=ai_settings.fleet_drop_speed
 

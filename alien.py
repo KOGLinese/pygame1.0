@@ -1,9 +1,12 @@
 import pygame
 from pygame.sprite import Sprite
 
+
 class Alien(Sprite):
     def __init__(self,ai_settings,screen):
+        # Alien,继承Sprite的init
         super(Alien,self).__init__()
+
         self.screen=screen
         self.ai_settings = ai_settings
 
@@ -15,6 +18,8 @@ class Alien(Sprite):
         self.rect.y=self.rect.height
 
         self.x=float(self.rect.x)
+
+
     def check_edges(self):
         screen_rect = self.screen.get_rect()
         if self.rect.right >= screen_rect.right:
@@ -28,6 +33,6 @@ class Alien(Sprite):
 
 
 
-
+    # 描绘
     def blitme(self):
         self.screen.blit(self.image,self.rect)
