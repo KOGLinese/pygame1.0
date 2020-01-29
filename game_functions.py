@@ -1,4 +1,5 @@
 import sys
+from time import sleep
 import pygame
 from bullet import Bullet
 from alien import Alien
@@ -108,12 +109,19 @@ def update_bullets(ai_settings,screen,ship, aliens,bullets):
             bullets.remove(bullet)
     # 检查是否有子弹击中了外星人
     # 如果是这样，就删除相应的子弹和外星人
-    collisions = pygame.sprite.groupcollide(bullets,aliens,True,True)
+    check_bullet_alien_collisions(ai_settings,screen,ship,aliens,bullets)
+
+
+def check_bullet_alien_collisions(ai_settings,screen,ship,aliens,bullets):
+    """响应子弹和外星人的碰撞"""
+    # 删除发生碰撞的子弹和外星人
+    collisions = pygame.sprite.groupcollide(bullets, aliens, True, True)
 
     if len(aliens) == 0:
         # 删除现有子弹并更新一群外星人
         bullets.empty()
-        creat_fleet(ai_settings,screen,ship,aliens)
+        creat_fleet(ai_settings, screen, ship, aliens)
+
 
 # 边界检测
 def check_fleet_edges(ai_settings,aliens):
@@ -129,7 +137,7 @@ def change_fleet_direction(ai_settings,aliens):
 
     ai_settings.fleet_direction *=-1
 
-def update_aliens(ai_settings,aliens):
+def update_aliens(ai_settings,stats,screen,ship,aliens,bullets):
     """
     检查是否有外星人位于屏幕边缘，并更新整群外星人的位置
     :param ai_settings:
@@ -137,4 +145,42 @@ def update_aliens(ai_settings,aliens):
     :return:
     """
     check_fleet_edges(ai_settings,aliens)
+
+    # 检查是否有外星人到达屏幕底端
+    check_aliens_bottom(ai_settings,stats,screen,ship,aliens,bullets)
+
+
     aliens.update()
+    # 检测外星人和飞船之间的碰撞
+    if pygame.sprite.spritecollideany(ship,aliens):
+        ship_hit(ai_settings,stats,screen,ship,aliens,bullets)
+
+def ship_hit(ai_settings,stats,screen,ship,aliens,bullets):
+    """响应被外星人撞到的飞船"""
+    if stats.ships_left > 0:
+        # 将飞船生命值减一
+        stats.ships_left -= 1
+
+        # 清空外星人列表和子弹列表
+        aliens.empty()
+        bullets.empty()
+
+        # 创建一群新的外星人，并将飞船放到屏幕底端中央
+        creat_fleet(ai_settings,screen,ship,aliens)
+        ship.center_ship()
+        # 暂停
+        sleep(0.5)
+    else:
+        stats.game_active = False
+
+def check_aliens_bottom(ai_settings,stats,screen,ship,aliens,bullets):
+    """检查是否有外星人达到屏幕底端"""
+    screen_rect = screen.get_rect()
+    for alien in aliens.sprites():
+        if alien.rect.bottom >= screen_rect.bottom:
+            # 像飞船撞击一样处理
+            ship_hit(ai_settings,stats,screen,ship,aliens,bullets)
+            break
+
+
+

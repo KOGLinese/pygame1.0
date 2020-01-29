@@ -9,6 +9,7 @@ class Settings():
 
         # 各种移动速度
         self.ship_speed_factor = 2
+        self.ship_limit = 3
         self.alien_speed_factor = 1
         self.fleet_drop_speed = 10
         # fleet_direction 1右移 -1 左移
