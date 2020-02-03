@@ -21,3 +21,6 @@ class Settings():
         self.bullet_height = 15
         self.bullet_color = (60, 60, 60)
         self.bullet_allowed = 5
+
+        # 分数设置
+        self.alien_points = 50
